@@ -15,7 +15,7 @@ public class SignatureVerifier {
     private Logger logger = LoggerFactory.getLogger(SignatureVerifier.class);
 
     public SignatureVerifier(String secretKey) {
-        this.secretKey = new SecretKeySpec(secretKey.getBytes(), "HmacSHA1");
+        this.secretKey = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
     }
 
     public boolean verifySignature(String signature, String message) {
@@ -31,7 +31,7 @@ public class SignatureVerifier {
     }
 
     Mac createMac() throws NoSuchAlgorithmException, InvalidKeyException {
-        Mac mac = Mac.getInstance("HmacSHA1");
+        Mac mac = Mac.getInstance("HmacSHA256");
         mac.init(secretKey);
         return mac;
     }
