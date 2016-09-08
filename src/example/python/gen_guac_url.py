@@ -27,7 +27,7 @@ def gen_guac_conn(server, host, protocol):
             if key in qs.keys():
                 message += str(key[5:])
                 message += str(qs[key])
-        hashed = hmac.new(SECRET_KEY, message, hashlib.sha1)
+        hashed = hmac.new(SECRET_KEY, message, hashlib.sha256)
         qs['signature'] = hashed.digest().encode("base64").rstrip('\n')
         uri = urllib.urlencode(qs)
     else:
@@ -39,7 +39,7 @@ def gen_guac_conn(server, host, protocol):
             if key in qs.keys():
                 message += str(key[5:])
                 message += str(qs[key])
-        hashed = hmac.new(SECRET_KEY, message, hashlib.sha1)
+        hashed = hmac.new(SECRET_KEY, message, hashlib.sha256)
         qs['signature'] = hashed.digest().encode("base64").rstrip('\n')
         uri = urllib.urlencode(qs)
 
@@ -51,5 +51,3 @@ if __name__ == "__main__":
     protocol = 'vnc'
     host = sys.argv[1]
     print gen_guac_conn(server, host, protocol)
-
-
