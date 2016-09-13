@@ -8,22 +8,21 @@ import time
 import urllib
 import sys
 
+# Usage: python gen_guac_url.py [HOSTNAME] [VNCPASS]
 
 SECRET_KEY = "secret_key"
 def gen_guac_conn(server, host, protocol):
     conn_id = random.randint(1, 20000)
-    singedParams = ['guac.username', 'guac.password', 'guac.hostname', 'guac.port']
+    signedParams = ['guac.username', 'guac.password', 'guac.hostname', 'guac.port']
     qs = dict()
     qs["id"] = "c/" + str(conn_id)
     qs["guac.hostname"] = host
     qs['timestamp'] = int(round(time.time() * 1000))
     if protocol == 'ssh':
-        qs["guac.username"] = "ssh_user"
-        qs["guac.password"] = "ssh_password"
         qs["guac.protocol"] = "ssh"
         qs["guac.port"] = 22
         message = str(qs["timestamp"]) + qs["guac.protocol"]
-        for key in singedParams:
+        for key in signedParams:
             if key in qs.keys():
                 message += str(key[5:])
                 message += str(qs[key])
@@ -31,11 +30,11 @@ def gen_guac_conn(server, host, protocol):
         qs['signature'] = hashed.digest().encode("base64").rstrip('\n')
         uri = urllib.urlencode(qs)
     else:
-        qs['guac.password'] = "vnc_password"
+        qs['guac.password'] = sys.argv[2]
         qs["guac.protocol"] = "vnc"
         qs["guac.port"] = 5901
         message = str(qs["timestamp"]) + qs["guac.protocol"]
-        for key in singedParams:
+        for key in signedParams:
             if key in qs.keys():
                 message += str(key[5:])
                 message += str(qs[key])
@@ -51,3 +50,10 @@ if __name__ == "__main__":
     protocol = 'vnc'
     host = sys.argv[1]
     print gen_guac_conn(server, host, protocol)
+    print "\n"
+if __name__ == "__main__":
+    server = 'localhost'
+    protocol = 'ssh'
+    host = sys.argv[1]
+    print gen_guac_conn(server, host, protocol)
+    print "\n"
