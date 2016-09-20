@@ -8,7 +8,7 @@ import time
 import urllib
 import sys
 
-# Usage: python gen_guac_url.py [HOSTNAME] [VNCPASS]
+# Usage: python gen_guac_url.py [HOSTNAME] [VNCPASS] [PROTOCOL]
 
 SECRET_KEY = "secret_key"
 def gen_guac_conn(server, host, protocol):
@@ -47,13 +47,7 @@ def gen_guac_conn(server, host, protocol):
 
 if __name__ == "__main__":
     server = 'localhost'
-    protocol = 'vnc'
-    host = sys.argv[1]
-    print gen_guac_conn(server, host, protocol)
-    print "\n"
-if __name__ == "__main__":
-    server = 'localhost'
-    protocol = 'ssh'
+    protocol = sys.argv[3]
     host = sys.argv[1]
     print gen_guac_conn(server, host, protocol)
     print "\n"
