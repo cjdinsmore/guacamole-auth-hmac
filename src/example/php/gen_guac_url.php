@@ -37,7 +37,7 @@ foreach ( $fields as $key=>$value ) {
 
 // Remove the last character, which is an extra '&'
 $fields_string = substr($fields_string, 0, -1);
-// print $fields_string . "\n\n";
+print $fields_string . "\n\n";
 
 $ch = curl_init($guacamole);
 
