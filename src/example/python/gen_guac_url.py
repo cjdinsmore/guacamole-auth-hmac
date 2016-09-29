@@ -42,7 +42,7 @@ def gen_guac_conn(server, host, protocol):
         qs['signature'] = hashed.digest().encode("base64").rstrip('\n')
         uri = urllib.urlencode(qs)
 
-    guac_conn = 'http://' + str(server).strip() + '/#/client/' + str(conn_id) + '?' + uri
+    guac_conn = 'http://' + str(server).strip() + '/#/c/client/' + str(conn_id) + '?' + uri
     return guac_conn
 
 if __name__ == "__main__":
