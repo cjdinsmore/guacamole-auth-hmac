@@ -1,19 +1,6 @@
-# guacamole-auth-hmac [![Build Status](https://travis-ci.org/grncdr/guacamole-auth-hmac.png?branch=master)](https://travis-ci.org/grncdr/guacamole-auth-hmac)
+# guacamole-auth-hmac
 
 ## Update
-Start  guacamole 0.9.4 something changed:
-+ [GUAC-1102: Reconstitute consumed HTTP requests with an external collection of parameter name/value pairs](https://github.com/glyptodon/guacamole-client/pull/144) done after relase of guacamole 0.9.6;
-  Because this fix was done after release of guacamole 0.9.6, you need latest guacamole source code to build gucamole.war to work with this guacamole-auth-ham ext.
-
-+ [GUAC-1100: Move connection and connection group directories to root...](https://github.com/glyptodon/guacamole-client/commit/6f61300cbc59c75e67a8ccf3b9e9de01471eda2e);
-
-Now guacamole-auth-hmac can work with guacamole-0.9.6 after I fixed somehting.
-The connect url should be like this:
-
-`http://guacamomle-host/#/client/c/3356?id=c%2F3356&timestamp=1429076162000&guac.hostname=192.168.42.3&guac.protocol=vnc&guac.password=123456&guac.port=5901&signature=OQ7g3xkZC75BXMS6TlpOudNTvr8%3D`
-
-There were a problem in command (`mvn package`), it will be failed at testing. I ignore this by skipping test(`mvn package -Dmaven.test.skip=true`).
-
 
 ## Description
 
@@ -38,8 +25,7 @@ The resulting jar file will be placed in `target/guacamole-auth-hmac-<version>.j
 at least that version before using this plugin.
 
 Copy `guacamole-auth-hmac.jar` to the location specified by
-[`lib-directory`][config-classpath] in `guacamole.properties`. Then set the
-`auth-provider` property to `com.stephensugden.guacamole.net.hmac.HmacAuthenticationProvider`.
+[`lib-directory`][config-classpath] in `guacamole.properties`.
 
 `guacamole-auth-hmac` adds two new config keys to `guacamole.properties`:
 
@@ -53,9 +39,7 @@ Copy `guacamole-auth-hmac.jar` to the location specified by
 
 ## Usage
 
-To generate a signed URL for usage with this plugin, simply use the path to
-Guacamole's built-in ~~`/client.xhtml`~~ as a base, and append the following query
-parameters:
+[Guacamole POST - reason for some changes](https://glyptodon.org/jira/browse/GUAC-1102?jql=project%20%3D%20GUAC%20AND%20resolution%20%3D%20Unresolved%20AND%20priority%20%3D%20Major%20ORDER%20BY%20key%20DESC)
 
  * `id`  - A connection ID that must be unique per user session.
  * `timestamp` - A unix timestamp in milliseconds. (E.G. `time() * 1000` in PHP).
@@ -79,34 +63,5 @@ from the request parameters as follows:
     if the parameter was included in the request, append it's unprefixed name
     (e.g. - `guac.username` becomes `username`) followed by it's value.
 
-### Request Signing - Example
-
-Given a request for the following URL:
-
-~~`client.xhtml?id=example&guac.protocol=rdp&guac.hostname=myserver.internal&guac.port=3389&timestamp=1377143741000`~~
-
-The message to be signed will be the concatenation of the following strings:
-
-  - `"1377143741000"`
-  - `"rdp"`
-  - `"hostname"`
-  - `"myserver.internal"`
-  - `"port"`
-  - `"3389"`
-
-Assuming a secret key of `"secret"`, a `signature` parameter should be appended
-with a value that is the base-64 encoded value of the hash produced by signing
-the message `"1377143741000rdphostnamemyserver.internalport3389"` with the key
-`"secret"`, or `"Iost5ouayLzpKLgx607kY1QUVwY="`. How
-this signature is produced is dependent on your programming language/platform,
-but with recent versions of PHP it looks like this:
-
-    base64_encode(hash_hmac('sha1', $message, $secret));
-
-An [example PHP implementation][example-php] is included in `src/example/php`.
-
-[example-php]: https://github.com/grncdr/guacamole-auth-hmac/blob/master/src/example/php
-
-## License
-
-MIT License
+## POST
+Using the php form example, parameters can be POSTed to `/guacamole/api/tokens` to authenticate. The response is then sent as JSON and contains `authToken` which is then used to login: `guacamole/#/client/c/(id)?token=(authToken)`

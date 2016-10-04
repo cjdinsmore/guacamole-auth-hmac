@@ -21,7 +21,7 @@ $signature = hash_hmac('sha256', $message, $secretKey, 1);
     <title>Guacamole Button</title>
   </head>
   <body>
-    <form enctype='application/x-www-form-urlencoded' method='POST' action='http://localhost:8888/guacamole/#/c/client/<?= $id; ?>'>
+    <form enctype='application/x-www-form-urlencoded' method='POST' action='http://localhost:8888/guacamole/api/tokens'>
 
       <input type='hidden' name='timestamp'     value='<?= urlencode($timestamp) ?>'>
       <input type='hidden' name='guac.port'     value='<?= urlencode($port) ?>'>
