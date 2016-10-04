@@ -5,10 +5,10 @@ $protocol = 'vnc';
 $port = 5901;
 if ($protocol === 'ssh')
   $port = 22;
-$id = 'c/'.rand( 1,20000);
+$id = rand( 1,20000);
 $vncPass = 'password';
 $secretKey = 'secret';
-$timestamp = time() * 1000;
+$timestamp = round(time() * 1000);
 $message = "$timestamp$protocol";
 
 $signature = hash_hmac('sha256', $message, $secretKey, 1);
@@ -29,7 +29,7 @@ $signature = hash_hmac('sha256', $message, $secretKey, 1);
       <input type='hidden' name='guac.protocol' value='<?= urlencode($protocol) ?>'>
       <input type='hidden' name='signature'     value='<?= base64_encode($signature) ?>'>
       <input type='hidden' name='guac.hostname' value='<?= urlencode($hostname) ?>'>
-      <input type='hidden' name='id'            value='<?= urlencode($id) ?>'>
+      <input type='hidden' name='id'            value='<?= urlencode('c/'.$id) ?>'>
 
       <input type='submit' value='click for Guacamole' >
     </form>
