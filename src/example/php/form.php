@@ -19,6 +19,7 @@ $signature = hash_hmac('sha256', $message, $secretKey, 1);
 <html>
   <head>
     <title>Guacamole Button</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   </head>
   <body>
     <form enctype='application/x-www-form-urlencoded' method='POST' action='http://localhost:8888/guacamole/api/tokens' name='guacform'>
