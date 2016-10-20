@@ -21,7 +21,7 @@ $signature = hash_hmac('sha256', $message, $secretKey, 1);
     <title>Guacamole Button</title>
   </head>
   <body>
-    <form enctype='application/x-www-form-urlencoded' method='POST' action='http://localhost:8888/guacamole/api/tokens'>
+    <form enctype='application/x-www-form-urlencoded' method='POST' action='http://localhost:8888/guacamole/api/tokens' name='guacform'>
 
       <input type='hidden' name='timestamp'     value='<?= urlencode($timestamp) ?>'>
       <input type='hidden' name='guac.port'     value='<?= urlencode($port) ?>'>
@@ -31,7 +31,37 @@ $signature = hash_hmac('sha256', $message, $secretKey, 1);
       <input type='hidden' name='guac.hostname' value='<?= urlencode($hostname) ?>'>
       <input type='hidden' name='id'            value='<?= urlencode('c/'.$id) ?>'>
 
-      <input type='submit' value='click for Guacamole' >
     </form>
+
+    <div id="guac">
+      <button type="button" onclick="submitForm()" >Connect to Guacamole!</button>
+    </div>
+
+    <script>
+    function submitForm() {
+      var xhr = new XMLHttpRequest();
+
+      // Turn form into a string
+      var str = $("form").serialize();
+
+      // Open the xhr
+      xhr.open('POST','http://localhost:8888/guacamole/api/tokens', true);
+      xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+
+      // Send the form data
+      xhr.send(str);
+
+      // Redirect on successful response
+      xhr.onreadystatechange=function() {
+        if(xhr.readyState===4) {
+          if(xhr.status===200) {
+            window.location.assign("http://localhost:8888/guacamole/#?token=" + JSON.parse(xhr.responseText).authToken);
+          }
+        }
+      };
+    }
+
+    </script>
+
   </body>
 </html>
