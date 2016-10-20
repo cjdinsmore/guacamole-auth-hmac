@@ -3,7 +3,7 @@
 // $username = $_GET['username'];
 // $hostname = $_GET['hostname'];
 // $protocol = $_GET['protocol'];
-$username = 'calvinmclean';
+$username = 'username';
 $hostname = 'hostname';
 $protocol = 'vnc';
 
