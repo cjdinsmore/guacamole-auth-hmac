@@ -59,13 +59,13 @@
 
       // Send the form data
       xhr.send(str);
-      
+
       // Redirect on successful response
       xhr.onreadystatechange=function() {
         if( xhr.readyState === 4 ) {
           if( xhr.status === 200 ) {
             // Add the authToken to the parameter string
-            str += "&" + JSON.parse(xhr.responseText).authToken;
+            // str += "&" + JSON.parse(xhr.responseText).authToken;
 
             // window.location.assign( "http://localhost:8888/guacamole/#/client/?" + str );
             window.open( "http://localhost:8888/guacamole/#/client/?" + str );

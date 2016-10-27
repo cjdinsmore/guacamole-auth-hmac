@@ -22,6 +22,14 @@
 
   // Hash the message for the signature
   $signature = hash_hmac('sha256', $message, $secretKey, 1);
+
+  // Make ID a string and cut off first 2 chars
+  $idX = strval($id);
+  $idX = substr($idX, 2);
+
+  $idX = $idX . '�' . 'c' . '�' . 'hmac';
+
+  $base64id = base64_encode($idX);
 ?>
 
 <!DOCTYPE html>
@@ -66,11 +74,11 @@
 
             // Set xhr2 to be login page
             xhr2 = new XMLHttpRequest();
-            xhr2.open('POST','http://localhost:8888/guacamole/#/client/<?= $id ?>?token=' + JSON.parse(xhr.responseText).authToken, true );
+            xhr2.open('GET','http://localhost:8888/guacamole/#/client/<?= $id ?>?token=' + JSON.parse(xhr.responseText).authToken, true );
             xhr2.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 
             // Add the authToken to the GET URL
-            str += "&" + JSON.parse(xhr.responseText).authToken;
+            // str += "&token=" + JSON.parse(xhr.responseText).authToken;
 
             // Send the form data
             xhr2.send(str);
@@ -78,7 +86,7 @@
               if( xhr.readyState === 4 ) {
                 if( xhr.status === 200 ) {
                   // window.location.assign( "http://localhost:8888/guacamole/#/client/?" + str );
-                  window.open( "http://localhost:8888/guacamole/#/client/?" + str );
+                  window.open( "http://localhost:8888/guacamole/#/client/<?= $base64id ?>" );
                 }
               }
             };
