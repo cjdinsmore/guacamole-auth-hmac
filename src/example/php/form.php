@@ -1,17 +1,17 @@
 <?php
-$username = 'username';
-$hostname = 'hostname';
-$protocol = 'vnc';
-$port = 5901;
-if ($protocol === 'ssh')
-  $port = 22;
-$id = rand( 1,20000);
-$vncPass = 'password';
-$secretKey = 'secret';
-$timestamp = round(time() * 1000);
-$message = "$timestamp$protocol";
+  $username = 'username';
+  $hostname = 'hostname';
+  $protocol = 'vnc';
+  $port = 5901;
+  if ($protocol === 'ssh')
+    $port = 22;
+  $id = rand( 1,20000);
+  $vncPass = 'password';
+  $secretKey = 'secret';
+  $timestamp = round(time() * 1000);
+  $message = "$timestamp$protocol";
 
-$signature = hash_hmac('sha256', $message, $secretKey, 1);
+  $signature = hash_hmac('sha256', $message, $secretKey, 1);
 ?>
 
 <!DOCTYPE html>
@@ -62,6 +62,7 @@ $signature = hash_hmac('sha256', $message, $secretKey, 1);
             xhr2.open('POST','http://localhost:8888/guacamole/#/client/<?= $id ?>?token=' + JSON.parse(xhr.responseText).authToken, true );
             xhr2.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 
+            // Add the authToken to the GET URL
             str += "&" + JSON.parse(xhr.responseText).authToken;
 
             // Send the form data
