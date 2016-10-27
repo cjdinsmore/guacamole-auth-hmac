@@ -12,12 +12,6 @@ $timestamp = round(time() * 1000);
 $message = "$timestamp$protocol";
 
 $signature = hash_hmac('sha256', $message, $secretKey, 1);
-
-// Turn id into a string and remove first 2 characters
-$idString = strval($id);
-$idString = substr($idString, 2);
-
-$base64ident = base64_encode($idString.'�'.'c'.'�'.'hmac');
 ?>
 
 <!DOCTYPE html>
@@ -62,20 +56,20 @@ $base64ident = base64_encode($idString.'�'.'c'.'�'.'hmac');
         if( xhr.readyState === 4 ) {
           if( xhr.status === 200 ) {
             // window.location.assign( "http://localhost:8888/guacamole/#/client/<?= $id ?>?token=" + JSON.parse(xhr.responseText).authToken );
-            // window.alert('<?= $base64ident ?>');
-            // window.location.assign( "http://localhost:8888/guacamole/#/client/<?= $base64ident ?>?token=" + JSON.parse(xhr.responseText).authToken );
 
             // Set xhr2 to be login page
             xhr2 = new XMLHttpRequest();
-            xhr2.open('GET','http://localhost:8888/guacamole/#/', true );
+            xhr2.open('POST','http://localhost:8888/guacamole/#/client/<?= $id ?>?token=' + JSON.parse(xhr.responseText).authToken, true );
             xhr2.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 
-            // Send the JSON token
-            xhr2.send( "token=" + JSON.parse(xhr.responseText).authToken );
+            str += "&" + JSON.parse(xhr.responseText).authToken;
+
+            // Send the form data
+            xhr2.send(str);
             xhr2.onreadystatechange=function() {
               if( xhr.readyState === 4 ) {
                 if( xhr.status === 200 ) {
-                  window.location.assign( "http://localhost:8888/guacamole/#/client/<?= $base64ident ?>" );
+                  window.location.assign( "http://localhost:8888/guacamole/#/client/?" + str );
                 }
               }
             };
