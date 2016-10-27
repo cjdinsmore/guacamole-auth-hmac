@@ -59,7 +59,6 @@
 
       // Send the form data
       xhr.send(str);
-      
       // Redirect on successful response
       xhr.onreadystatechange=function() {
         if( xhr.readyState === 4 ) {
