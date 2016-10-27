@@ -59,16 +59,29 @@
 
       // Send the form data
       xhr.send(str);
-      
       // Redirect on successful response
       xhr.onreadystatechange=function() {
         if( xhr.readyState === 4 ) {
           if( xhr.status === 200 ) {
-            // Add the authToken to the parameter string
+
+            // Set xhr2 to be login page
+            xhr2 = new XMLHttpRequest();
+            xhr2.open('POST','http://localhost:8888/guacamole/#/client/<?= $id ?>?token=' + JSON.parse(xhr.responseText).authToken, true );
+            xhr2.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+
+            // Add the authToken to the GET URL
             str += "&" + JSON.parse(xhr.responseText).authToken;
 
-            // window.location.assign( "http://localhost:8888/guacamole/#/client/?" + str );
-            window.open( "http://localhost:8888/guacamole/#/client/?" + str );
+            // Send the form data
+            xhr2.send(str);
+            xhr2.onreadystatechange=function() {
+              if( xhr.readyState === 4 ) {
+                if( xhr.status === 200 ) {
+                  // window.location.assign( "http://localhost:8888/guacamole/#/client/?" + str );
+                  window.open( "http://localhost:8888/guacamole/#/client/?" + str );
+                }
+              }
+            };
           }
         }
       };
