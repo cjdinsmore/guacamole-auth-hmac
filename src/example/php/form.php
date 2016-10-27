@@ -12,6 +12,12 @@ $timestamp = round(time() * 1000);
 $message = "$timestamp$protocol";
 
 $signature = hash_hmac('sha256', $message, $secretKey, 1);
+
+// Turn id into a string and remove first 2 characters
+$idString = strval($id);
+$idString = substr($idString, 2);
+
+$base64ident = base64_encode($idString.'�'.'c'.'�'.'hmac');
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +36,7 @@ $signature = hash_hmac('sha256', $message, $secretKey, 1);
       <input type='hidden' name='guac.protocol' value='<?= urlencode($protocol) ?>'>
       <input type='hidden' name='signature'     value='<?= base64_encode($signature) ?>'>
       <input type='hidden' name='guac.hostname' value='<?= urlencode($hostname) ?>'>
-      <input type='hidden' name='id'            value='<?= urlencode('c/'.$id) ?>'>
+      <input type='hidden' name='id'            value='<?= urlencode($id) ?>'>
 
     </form>
 
@@ -51,18 +57,33 @@ $signature = hash_hmac('sha256', $message, $secretKey, 1);
 
       // Send the form data
       xhr.send(str);
-
       // Redirect on successful response
       xhr.onreadystatechange=function() {
-        if(xhr.readyState===4) {
-          if(xhr.status===200) {
-            window.location.assign("http://localhost:8888/guacamole/#?token=" + JSON.parse(xhr.responseText).authToken);
+        if( xhr.readyState === 4 ) {
+          if( xhr.status === 200 ) {
+            // window.location.assign( "http://localhost:8888/guacamole/#/client/<?= $id ?>?token=" + JSON.parse(xhr.responseText).authToken );
+            // window.alert('<?= $base64ident ?>');
+            // window.location.assign( "http://localhost:8888/guacamole/#/client/<?= $base64ident ?>?token=" + JSON.parse(xhr.responseText).authToken );
+
+            // Set xhr2 to be login page
+            xhr2 = new XMLHttpRequest();
+            xhr2.open('GET','http://localhost:8888/guacamole/#/', true );
+            xhr2.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+
+            // Send the JSON token
+            xhr2.send( "token=" + JSON.parse(xhr.responseText).authToken );
+            xhr2.onreadystatechange=function() {
+              if( xhr.readyState === 4 ) {
+                if( xhr.status === 200 ) {
+                  window.location.assign( "http://localhost:8888/guacamole/#/client/<?= $base64ident ?>" );
+                }
+              }
+            };
           }
         }
       };
     }
 
     </script>
-
   </body>
 </html>
