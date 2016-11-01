@@ -22,6 +22,14 @@
 
   // Hash the message for the signature
   $signature = hash_hmac('sha256', $message, $secretKey, 1);
+
+  // Make ID a string and cut off first 2 chars
+  $idX = strval($id);
+  $idX = substr($idX, 2);
+
+  $idX = $idX . "\0" . 'c' . "\0" . 'hmac';
+
+  $base64id = base64_encode($idX);
 ?>
 
 <!DOCTYPE html>
@@ -59,16 +67,13 @@
 
       // Send the form data
       xhr.send(str);
-      
+
       // Redirect on successful response
       xhr.onreadystatechange=function() {
         if( xhr.readyState === 4 ) {
           if( xhr.status === 200 ) {
-            // Add the authToken to the parameter string
-            str += "&" + JSON.parse(xhr.responseText).authToken;
-
-            // window.location.assign( "http://localhost:8888/guacamole/#/client/?" + str );
-            window.open( "http://localhost:8888/guacamole/#/client/?" + str );
+            // window.open( "http://localhost:8888/guacamole/#/client/c/<?php $id ?>?token=" + JSON.parse(xhr.responseText).authToken );
+            window.open( "http://localhost:8888/guacamole/#/client/<?= $base64id ?>?token=" + JSON.parse(xhr.responseText).authToken );
           }
         }
       };
