@@ -1,12 +1,12 @@
 <?php
   // Connection info
-  $username = 'username';
-  $hostname = 'hostname';
-  $protocol = 'vnc';
-  $vncPass = 'password';
+  $username  = 'username';
+  $hostname  = 'hostname';
+  $protocol  = 'vnc';
+  $vncPass   = 'password';
   $secretKey = 'secret';
+  $port      = 5901;
 
-  $port = 5901;
   // SSH port is 22, not 5901
   if ($protocol === 'ssh')
     $port = 22;
@@ -23,13 +23,11 @@
   // Hash the message for the signature
   $signature = hash_hmac('sha256', $message, $secretKey, 1);
 
-  // Make ID a string and cut off first 2 chars
+  // Make ID a string and cut off first 2 chars ( This is how connections always appear in Guacamole after connecting )
   $idX = strval($id);
   $idX = substr($idX, 2);
 
-  $idX = $idX . "\0" . 'c' . "\0" . 'hmac';
-
-  $base64id = base64_encode($idX);
+  $base64id = base64_encode( $idX . "\0" . 'c' . "\0" . 'hmac' );
 ?>
 
 <!DOCTYPE html>
@@ -38,6 +36,13 @@
   <head>
     <title>Guacamole Button</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <style>
+      button {
+        height: 50px;
+        width: 100px;
+        padding: 8px;
+      }
+    </style>
   </head>
   <body>
     <form enctype='application/x-www-form-urlencoded' method='POST' action='http://localhost:8888/guacamole/api/tokens' name='guacform'>
@@ -78,7 +83,6 @@
         }
       };
     }
-
     </script>
   </body>
 </html>

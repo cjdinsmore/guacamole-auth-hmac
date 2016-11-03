@@ -1,7 +1,5 @@
 # guacamole-auth-hmac
 
-## Update
-
 ## Description
 
 This project is a plugin for [Guacamole](http://guac-dev.org), an HTML5 based
@@ -39,13 +37,10 @@ Copy `guacamole-auth-hmac.jar` to the location specified by
 
 ## Usage
 
-[Guacamole POST - reason for some changes](https://glyptodon.org/jira/browse/GUAC-1102?jql=project%20%3D%20GUAC%20AND%20resolution%20%3D%20Unresolved%20AND%20priority%20%3D%20Major%20ORDER%20BY%20key%20DESC)
-
  * `id`  - A connection ID that must be unique per user session.
- * `timestamp` - A unix timestamp in milliseconds. (E.G. `time() * 1000` in PHP).
-   This is used to prevent replay attacks.
- * `signature` - The [request signature][#request-signing]
- * `guac.protocol` - One of `vnc`, `rdp`, or `ssh`.
+ * `timestamp` - A unix timestamp in milliseconds. This is used to prevent replay attacks.
+ * `signature` - The SHA256 encrypted signature for authentication.
+ * `guac.protocol` - One of `vnc` or `ssh`.
  * `guac.hostname` - The hostname of the remote desktop server to connect to.
  * `guac.port` - The port number to connect to.
  * `guac.username` - (_optional_)
@@ -55,13 +50,27 @@ Copy `guacamole-auth-hmac.jar` to the location specified by
 
 ## Request Signing
 
-Requests must be signed with an HMAC, where the message content is generated
-from the request parameters as follows:
+Requests must be signed with an HMAC, where the message content is generated from the request parameters as follows:
 
  1. The parameters `timestamp`, and `guac.protocol` are concatenated.
- 2. For each of `guac.username`, `guac.password`, `guac.hostname`, and `guac.port`;
-    if the parameter was included in the request, append it's unprefixed name
-    (e.g. - `guac.username` becomes `username`) followed by it's value.
+ 2. Encrypt using SHA256.
 
 ## POST
-Using the php form example, parameters can be POSTed to `/guacamole/api/tokens` to authenticate. The response is then sent as JSON and contains `authToken` which is then used to login: `guacamole/#/client/c/(id)?token=(authToken)`
+Using the php form example, parameters can be POSTed to `/guacamole/api/tokens` to authenticate. The response is then sent as JSON and contains `authToken` which is then used to login: `guacamole/#/client/(connection)?token=(authToken)`
+
+`(connection)` is an encoded string that tells Guacamole to connect the user to a server. It is generated as follows:
+
+1. Remove the first two characters from the ID (I have tried it without shortening the ID, but it did not work).
+2. Append `NULLcNullhmac` to the shortened ID.
+  - `NULL` represents a `NULL` character (often "\0").
+  - `c` stands for connection.
+  - `hmac` is the authentication provider.
+3. Encode this with base64.
+
+Then, add this to the URL after `guacamole/#/client/` and append the authToken parameter.
+
+[More about using POST with Guacamole](https://glyptodon.org/jira/browse/GUAC-1102?jql=project%20%3D%20GUAC%20AND%20resolution%20%3D%20Unresolved%20AND%20priority%20%3D%20Major%20ORDER%20BY%20key%20DESC)
+
+[Outline of how Guacamole receives and responds to authentication requests](https://sourceforge.net/p/guacamole/discussion/1110834/thread/8bea4c74/#102b)
+
+[Explanation of the base64 encoded URL](https://sourceforge.net/p/guacamole/discussion/1110834/thread/fb609070/)
