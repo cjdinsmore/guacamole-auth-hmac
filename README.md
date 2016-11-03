@@ -37,7 +37,7 @@ Copy `guacamole-auth-hmac.jar` to the location specified by
 
 ## Usage
 
- * `id`  - A connection ID that must be unique per user session.
+ * `id`  - A connection ID that must be unique per user session. Can be a random integer ***or UUID***.
  * `timestamp` - A unix timestamp in milliseconds. This is used to prevent replay attacks.
  * `signature` - The SHA256 encrypted signature for authentication.
  * `guac.protocol` - One of `vnc` or `ssh`.
