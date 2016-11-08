@@ -1,11 +1,13 @@
 <?php
   // Connection info
   $username  = 'username';
-  $hostname  = 'hostname';
-  $protocol  = 'vnc';
+  $hostname  = 'mclean.iplantcollaborative.org';
+  $protocol  = 'ssh';
   $vncPass   = 'password';
   $secretKey = 'secret';
   $port      = 5901;
+
+  $URL = "http://localhost:8888/guacamole";
 
   // SSH port is 22, not 5901
   if ($protocol === 'ssh')
@@ -45,7 +47,7 @@
     </style>
   </head>
   <body>
-    <form enctype='application/x-www-form-urlencoded' method='POST' action='http://localhost:8888/guacamole/api/tokens' name='guacform'>
+    <form enctype='application/x-www-form-urlencoded' method='POST' action='<?= $URL ?>/api/tokens' name='guacform'>
       <input type='hidden' name='timestamp'     value='<?= urlencode($timestamp) ?>'>
       <input type='hidden' name='guac.port'     value='<?= urlencode($port) ?>'>
       <input type='hidden' name='guac.password' value='<?= urlencode($vncPass) ?>'>
@@ -67,7 +69,7 @@
       var str = $("form").serialize();
 
       // Open the xhr
-      xhr.open('POST','http://localhost:8888/guacamole/api/tokens', true);
+      xhr.open('POST','<?= $URL ?>/api/tokens', true);
       xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 
       // Send the form data
@@ -77,8 +79,8 @@
       xhr.onreadystatechange=function() {
         if( xhr.readyState === 4 ) {
           if( xhr.status === 200 ) {
-            // window.open( "http://localhost:8888/guacamole/#/client/c/<?php $id ?>?token=" + JSON.parse(xhr.responseText).authToken );
-            window.open( "http://localhost:8888/guacamole/#/client/<?= $base64id ?>?token=" + JSON.parse(xhr.responseText).authToken );
+            // window.open( "<?= $URL ?>/#/client/c/<?php $id ?>?token=" + JSON.parse(xhr.responseText).authToken );
+            window.open( "<?= $URL ?>/#/client/<?= $base64id ?>?token=" + JSON.parse(xhr.responseText).authToken );
           }
         }
       };
