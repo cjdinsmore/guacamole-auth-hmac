@@ -1,7 +1,7 @@
 <?php
   // Connection info
   $username  = 'username';
-  $hostname  = 'mclean.iplantcollaborative.org';
+  $hostname  = 'localhost';
   $protocol  = 'ssh';
   $vncPass   = 'password';
   $secretKey = 'secret';
