@@ -114,7 +114,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         }
         String signature = request.getParameter(SIGNATURE_PARAM);
 
-        logger.warn("Get hmac signature: {}", signature);
+        logger.debug("Get hmac signature: {}", signature);
 
         if (signature == null) {
             // logger.warn("getGuacamoleConfiguration method returned NULL bc signature==null");
