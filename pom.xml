@@ -65,9 +65,9 @@
     <dependencies>
         <!-- Guacamole Extension API -->
         <dependency>
-            <groupId>org.glyptodon.guacamole</groupId>
+            <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.9</version>
+            <version>0.9.10-incubating</version>
         </dependency>
 
         <dependency>
