@@ -1,5 +1,5 @@
 {
-  "guacamoleVersion" : "0.9.9",
+  "guacamoleVersion" : "0.9.10-incubating",
 
   "name"      : "HMAC Authentication",
   "namespace" : "auth-hmac",

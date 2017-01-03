@@ -91,7 +91,6 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         return configs;
     }
 
-    @Override
     public UserContext updateUserContext(UserContext context, AuthenticatedUser user ) throws GuacamoleException {
         Credentials credentials = user.getCredentials();
         HttpServletRequest request = credentials.getRequest();
