@@ -72,7 +72,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         return "hmac";
     }
 
-    @Override
+    // @Override
     public Map<String, GuacamoleConfiguration> getAuthorizedConfigurations(Credentials credentials) throws GuacamoleException {
         if (signatureVerifier == null) {
             initFromProperties();
