@@ -1,16 +1,16 @@
 package com.stephensugden.guacamole.net.hmac;
 
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.auth.AuthenticatedUser;
-import org.glyptodon.guacamole.net.auth.Credentials;
-import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.auth.simple.SimpleAuthenticationProvider;
-import org.glyptodon.guacamole.net.auth.simple.SimpleConnection;
-import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionDirectory;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
-import org.glyptodon.guacamole.properties.IntegerGuacamoleProperty;
-import org.glyptodon.guacamole.properties.StringGuacamoleProperty;
-import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.simple.SimpleAuthenticationProvider;
+import org.apache.guacamole.net.auth.simple.SimpleConnection;
+import org.apache.guacamole.net.auth.simple.SimpleConnectionDirectory;
+import org.apache.guacamole.properties.GuacamoleProperties;
+import org.apache.guacamole.properties.IntegerGuacamoleProperty;
+import org.apache.guacamole.properties.StringGuacamoleProperty;
+import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +72,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         return "hmac";
     }
 
-    @Override
+    // @Override
     public Map<String, GuacamoleConfiguration> getAuthorizedConfigurations(Credentials credentials) throws GuacamoleException {
         if (signatureVerifier == null) {
             initFromProperties();
@@ -91,7 +91,6 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         return configs;
     }
 
-    @Override
     public UserContext updateUserContext(UserContext context, AuthenticatedUser user ) throws GuacamoleException {
         Credentials credentials = user.getCredentials();
         HttpServletRequest request = credentials.getRequest();
