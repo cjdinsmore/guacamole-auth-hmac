@@ -135,27 +135,24 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
             return null;
         }
 
-        // Hostname is required!
+        // Protocol is required!
         if (config.getProtocol() == null) {
             logger.debug("getGuacamoleConfiguration method returned NULL bc config.getProtocol() == null");
             return null;
         }
 
-        StringBuilder message = new StringBuilder(timestamp)
-                .append(config.getProtocol());
-
-        for (String name : SIGNED_PARAMETERS) {
-            String value = config.getParameter(name);
-            if (value == null) {
-                continue;
-            }
-            // This loop goes through the SIGNED_PARAMETERS and if a value is not null,
-            // it is added to the message that will be hashed into signature.
-            logger.debug("Appending name = {}", name);
-            logger.debug("Appending value = {}", value);
-            // message.append(name);
-            // message.append(value);
+        // Port is required!
+        if (config.getParameter("port") == null) {
+            return null;
         }
+
+        StringBuilder message = new StringBuilder(timestamp).append(config.getProtocol());
+
+        // Add the hostname to the message so that it cannot be changed
+        message.append(config.getParameter("hostname"));
+
+        // Do the same for the port
+        message.append(config.getParameter("port"));
 
         logger.debug("Get hmac message: {}", message.toString());
 
