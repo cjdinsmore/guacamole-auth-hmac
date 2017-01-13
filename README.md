@@ -52,7 +52,7 @@ Copy `guacamole-auth-hmac.jar` to the location specified by
 
 Requests must be signed with an HMAC, where the message content is generated from the request parameters as follows:
 
- 1. The parameters `timestamp`, and `guac.protocol` are concatenated.
+ 1. The parameters `timestamp`, `guac.protocol`, `hostname`, and `port` are concatenated.
  2. Encrypt using SHA256.
 
 ## POST
