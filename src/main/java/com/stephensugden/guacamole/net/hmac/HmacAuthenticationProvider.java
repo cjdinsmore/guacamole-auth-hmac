@@ -151,8 +151,8 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
             }
             // This loop goes through the SIGNED_PARAMETERS and if a value is not null,
             // it is added to the message that will be hashed into signature.
-            // I will try it without adding these values.
-            // Result of removing this: IT WORKS!
+            logger.debug("Appending name = {}", name);
+            logger.debug("Appending value = {}", value);
             message.append(name);
             message.append(value);
         }
