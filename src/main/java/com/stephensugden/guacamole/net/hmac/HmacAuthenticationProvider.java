@@ -153,8 +153,8 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
             // it is added to the message that will be hashed into signature.
             logger.debug("Appending name = {}", name);
             logger.debug("Appending value = {}", value);
-            message.append(name);
-            message.append(value);
+            // message.append(name);
+            // message.append(value);
         }
 
         logger.debug("Get hmac message: {}", message.toString());
