@@ -116,7 +116,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         logger.debug("Get hmac signature: {}", signature);
 
         if (signature == null) {
-            logger.warn("getGuacamoleConfiguration method returned NULL bc signature==null");
+            logger.debug("getGuacamoleConfiguration method returned NULL bc signature==null");
             return null;
         }
         signature = signature.replace(' ', '+');
@@ -131,13 +131,13 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
         // Hostname is required!
         if (config.getParameter("hostname") == null) {
-            logger.warn("getGuacamoleConfiguration method returned NULL bc config.getParameter('hostname') == null");
+            logger.debug("getGuacamoleConfiguration method returned NULL bc config.getParameter('hostname') == null");
             return null;
         }
 
         // Hostname is required!
         if (config.getProtocol() == null) {
-            logger.warn("getGuacamoleConfiguration method returned NULL bc config.getProtocol() == null");
+            logger.debug("getGuacamoleConfiguration method returned NULL bc config.getProtocol() == null");
             return null;
         }
 
@@ -160,7 +160,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         logger.debug("Get hmac message: {}", message.toString());
 
         if (!signatureVerifier.verifySignature(signature, message.toString())) {
-            logger.warn("getGuacamoleConfiguration method returned NULL bc !signatureVerifier.verifySignature(signature, message.toString())");
+            logger.debug("Signatures do not match");
             return null;
         }
         String id = request.getParameter(ID_PARAM);
