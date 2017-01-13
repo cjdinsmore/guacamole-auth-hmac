@@ -116,7 +116,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         logger.debug("Get hmac signature: {}", signature);
 
         if (signature == null) {
-            // logger.warn("getGuacamoleConfiguration method returned NULL bc signature==null");
+            logger.debug("getGuacamoleConfiguration method returned NULL bc signature==null");
             return null;
         }
         signature = signature.replace(' ', '+');
@@ -131,36 +131,33 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
         // Hostname is required!
         if (config.getParameter("hostname") == null) {
-            // logger.warn("getGuacamoleConfiguration method returned NULL bc config.getParameter('hostname') == null");
+            logger.debug("getGuacamoleConfiguration method returned NULL bc config.getParameter('hostname') == null");
             return null;
         }
 
-        // Hostname is required!
+        // Protocol is required!
         if (config.getProtocol() == null) {
-            // logger.warn("getGuacamoleConfiguration method returned NULL bc config.getProtocol() == null");
+            logger.debug("getGuacamoleConfiguration method returned NULL bc config.getProtocol() == null");
             return null;
         }
 
-        StringBuilder message = new StringBuilder(timestamp)
-                .append(config.getProtocol());
-
-        for (String name : SIGNED_PARAMETERS) {
-            String value = config.getParameter(name);
-            if (value == null) {
-                continue;
-            }
-            // This loop goes through the SIGNED_PARAMETERS and if a value is not null,
-            // it is added to the message that will be hashed into signature.
-            // I will try it without adding these values.
-            // Result of removing this: IT WORKS!
-            // message.append(name);
-            // message.append(value);
+        // Port is required!
+        if (config.getParameter("port") == null) {
+            return null;
         }
+
+        StringBuilder message = new StringBuilder(timestamp).append(config.getProtocol());
+
+        // Add the hostname to the message so that it cannot be changed
+        message.append(config.getParameter("hostname"));
+
+        // Do the same for the port
+        message.append(config.getParameter("port"));
 
         logger.debug("Get hmac message: {}", message.toString());
 
         if (!signatureVerifier.verifySignature(signature, message.toString())) {
-            // logger.warn("getGuacamoleConfiguration method returned NULL bc !signatureVerifier.verifySignature(signature, message.toString())");
+            logger.debug("Signatures do not match");
             return null;
         }
         String id = request.getParameter(ID_PARAM);
