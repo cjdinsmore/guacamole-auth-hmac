@@ -20,7 +20,7 @@
   $timestamp = round( time() * 1000 );
 
   // Concatenate timestamp and protocol for the signature
-  $message = "$timestamp$protocol";
+  $message = "$timestamp$protocol$hostname$port";
 
   // Hash the message for the signature
   $signature = hash_hmac('sha256', $message, $secretKey, 1);
