@@ -20,7 +20,7 @@
   $timestamp = round( time() * 1000 );
 
   // Concatenate timestamp and protocol for the signature
-  $message = "$timestamp$protocol$hostname$port";
+  $message = "$timestamp$protocol$hostname$port$username$vncPass";
 
   // Hash the message for the signature
   $signature = hash_hmac('sha256', $message, $secretKey, 1);
@@ -50,6 +50,7 @@
     <form enctype='application/x-www-form-urlencoded' method='POST' action='<?= $URL ?>/api/tokens' name='guacform'>
       <input type='hidden' name='timestamp'     value='<?= urlencode($timestamp) ?>'>
       <input type='hidden' name='guac.port'     value='<?= urlencode($port) ?>'>
+      <input type='hidden' name='guac.username' value='<?= urlencode($username) ?>'>
       <input type='hidden' name='guac.password' value='<?= urlencode($vncPass) ?>'>
       <input type='hidden' name='guac.protocol' value='<?= urlencode($protocol) ?>'>
       <input type='hidden' name='signature'     value='<?= base64_encode($signature) ?>'>

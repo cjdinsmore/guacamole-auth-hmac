@@ -49,13 +49,6 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
     public static final String TIMESTAMP_PARAM = "timestamp";
     public static final String PARAM_PREFIX = "guac.";
 
-    private static final List<String> SIGNED_PARAMETERS = new ArrayList<String>() {{
-        add("username");
-        add("password");
-        add("hostname");
-        add("port");
-    }};
-
     private SignatureVerifier signatureVerifier;
 
     private final TimeProviderInterface timeProvider;
@@ -113,10 +106,10 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         }
         String signature = request.getParameter(SIGNATURE_PARAM);
 
-        logger.debug("Get hmac signature: {}", signature);
+        logger.warn("Get hmac signature: {}", signature);
 
         if (signature == null) {
-            logger.debug("getGuacamoleConfiguration method returned NULL bc signature==null");
+            logger.warn("getGuacamoleConfiguration method returned NULL bc signature==null");
             return null;
         }
         signature = signature.replace(' ', '+');
@@ -131,18 +124,19 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
         // Hostname is required!
         if (config.getParameter("hostname") == null) {
-            logger.debug("getGuacamoleConfiguration method returned NULL bc config.getParameter('hostname') == null");
+            logger.warn("hostname is null");
             return null;
         }
 
         // Protocol is required!
         if (config.getProtocol() == null) {
-            logger.debug("getGuacamoleConfiguration method returned NULL bc config.getProtocol() == null");
+            logger.warn("protocol is null");
             return null;
         }
 
         // Port is required!
         if (config.getParameter("port") == null) {
+            logger.warn("port is null");
             return null;
         }
 
@@ -154,10 +148,20 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         // Do the same for the port
         message.append(config.getParameter("port"));
 
-        logger.debug("Get hmac message: {}", message.toString());
+        // Username is not required! Append if it does exist
+        if (config.getParameter("username") == null) {
+            logger.warn("username is null");
+        } else { message.append(config.getParameter("username")); }
+
+        // Password is not required! Append if it does exist
+        if (config.getParameter("password") == null) {
+            logger.warn("password is null");
+        } else { message.append(config.getParameter("password")); }
+
+        logger.warn("Get hmac message: {}", message.toString());
 
         if (!signatureVerifier.verifySignature(signature, message.toString())) {
-            logger.debug("Signatures do not match");
+            logger.warn("Signatures do not match");
             return null;
         }
         String id = request.getParameter(ID_PARAM);
