@@ -10,8 +10,10 @@
   $URL = "http://localhost:8888/guacamole";
 
   // SSH port is 22, not 5901
-  if ($protocol === 'ssh')
+  if ($protocol === 'ssh') {
     $port = 22;
+    $vncPass = '';
+  }
 
   // ID is a random number
   $id = rand( 1, 20000 );
