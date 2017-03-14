@@ -23,7 +23,7 @@ public class SignatureVerifier {
             Mac mac = createMac();
             String expected = Base64.encode(mac.doFinal(message.getBytes()));
             logger.info("The expected Signature is: " + expected);
-            logger.info("Recieved signature: " + message);
+            logger.info("Recieved signature: " + signature);
             return signature.equals(expected);
         } catch (InvalidKeyException e) {
             logger.warn("InvalidKeyException in SignatureVerifier");
