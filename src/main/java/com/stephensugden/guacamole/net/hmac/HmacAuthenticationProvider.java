@@ -74,13 +74,11 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         GuacamoleConfiguration config = getGuacamoleConfiguration(credentials.getRequest());
 
         if (config == null) {
-            // logger.warn("getAuthorizedConfigurations method returned NULL");
             return null;
         }
 
         Map<String, GuacamoleConfiguration> configs = new HashMap<String, GuacamoleConfiguration>();
         configs.put(config.getParameter("id"), config);
-        // logger.warn("getAuthorizedConfigurations method returned configs");
         return configs;
     }
 
@@ -89,14 +87,12 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         HttpServletRequest request = credentials.getRequest();
         GuacamoleConfiguration config = getGuacamoleConfiguration(request);
         if (config == null) {
-            // logger.warn("updateUserContext method returned NULL");
             return null;
         }
         String id = config.getParameter("id");
         SimpleConnectionDirectory connections = (SimpleConnectionDirectory) context.getConnectionDirectory();
         SimpleConnection connection = new SimpleConnection(id, id, config);
         connections.putConnection(connection);
-        // logger.warn("updateUserContext method returned context");
         return context;
     }
 
@@ -106,7 +102,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         }
         String signature = request.getParameter(SIGNATURE_PARAM);
 
-        logger.warn("Get hmac signature: {}", signature);
+        logger.info("Get hmac signature: {}", signature);
 
         if (signature == null) {
             logger.warn("getGuacamoleConfiguration method returned NULL bc signature==null");
@@ -116,7 +112,6 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
         String timestamp = request.getParameter(TIMESTAMP_PARAM);
         if (!checkTimestamp(timestamp)) {
-            // logger.warn("getGuacamoleConfiguration method returned NULL bc !checkTimestamp(timestamp)");
             return null;
         }
 
@@ -158,10 +153,10 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
             logger.warn("password is null");
         } else { message.append(config.getParameter("password")); }
 
-        logger.warn("Get hmac message: {}", message.toString());
+        logger.info("Recieved message: {}\nRecieved signature: {}", message.toString(), signature);
 
         if (!signatureVerifier.verifySignature(signature, message.toString())) {
-            logger.warn("Signatures do not match");
+            logger.warn("Signatures do not match.");
             return null;
         }
         String id = request.getParameter(ID_PARAM);
@@ -181,18 +176,15 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
     private boolean checkTimestamp(String ts) {
         if (timestampAgeLimit == 0) {
-            // logger.warn("checkTimestamp returns TRUE");
             return true;
         }
 
         if (ts == null) {
-            // logger.warn("checkTimestamp returns FALSE");
             return false;
         }
 
         long timestamp = Long.parseLong(ts, 10);
         long now = timeProvider.currentTimeMillis();
-        // logger.warn("checkTimestamp returns 'timestamp + timestampAgeLimit > now'");
         return timestamp + timestampAgeLimit > now;
     }
 
@@ -216,7 +208,6 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
         if (config.getProtocol() == null) config.setProtocol(defaultProtocol);
 
-        // logger.warn("parseConfigParams returns config");
         return config;
     }
 
