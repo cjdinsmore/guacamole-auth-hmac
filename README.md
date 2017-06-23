@@ -1,5 +1,7 @@
 # guacamole-auth-hmac
 
+Built for **Guacamole 0.9.12-incubating**.
+
 ## Description
 
 This project is a plugin for [Guacamole](http://guac-dev.org), an HTML5 based
