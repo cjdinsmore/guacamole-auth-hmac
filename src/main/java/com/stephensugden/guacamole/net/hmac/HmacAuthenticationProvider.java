@@ -17,6 +17,9 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
     public static final long TEN_MINUTES = 10 * 60 * 1000;
@@ -170,7 +173,50 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         }
         // This isn't normally part of the config, but it makes it much easier to return a single object
         config.setParameter("id", id);
-        // logger.warn("getGuacamoleConfiguration method returned configs");
+
+        // Add experimental read of a key file for private-key auth
+        File key_file = null;
+        FileInputStream fis = null;
+        byte[] data = null;
+        String key = null;
+
+        try {
+          key_file = new File("/etc/guacamole/keys/" + config.getParameter("username"));
+        } catch (Exception ex) {
+          logger.info("Exception in opening key_file.");
+          logger.info(ex.getMessage());
+        }
+
+        data = new byte[(int) key_file.length()];
+
+        try {
+          fis = new FileInputStream(key_file);
+        } catch (Exception ex) {
+          logger.info("Exception in FileInputStream key_file.");
+          logger.info(ex.getMessage());
+        }
+
+        try {
+          fis.read(data);
+          fis.close();
+        } catch (Exception ex) {
+          logger.info("Exception in reading or closing data.");
+          logger.info(ex.getMessage());
+        }
+
+        try {
+          key = new String(data, "UTF-8");
+        } catch (Exception ex) {
+          logger.info("Exception in creating key string.");
+          logger.info(ex.getMessage());
+        }
+
+        // Remove trailing newline
+        key = key.substring(0, key.length() - 1);
+
+        config.setParameter("private-key", key);
+        config.setParameter("sftp-private-key", key);
+
         return config;
     }
 
