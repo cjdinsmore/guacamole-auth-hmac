@@ -174,30 +174,48 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         // This isn't normally part of the config, but it makes it much easier to return a single object
         config.setParameter("id", id);
 
-        // Add experimental read of a key file for private-key
-        File file = null;
+        // Add experimental read of a key file for private-key auth
+        File key_file = null;
         FileInputStream fis = null;
         byte[] data = null;
-        String str = null;
-
-        String username = config.getParameter("username");
+        String key = null;
 
         try {
-          file = new File("/etc/guacamole/keys/" + username + "/" + username + "_guac_default");
-          data = new byte[(int) file.length()];
-          fis = new FileInputStream(file);
-          fis.read(data);
-          fis.close();
-          str = new String(data, "UTF-8");
-          // Remove trailing newline
-          str = str.substring(0, str.length() - 1);
-          logger.info("Private Key:\n"+ str);
-          config.setParameter("private-key", str);
-        } catch ( Exception ex ) {
-          logger.info("Exception in finding key.");
+          file = new File("/etc/guacamole/keys/" + username + "/" + username + "_guac_default");        } catch (Exception ex) {
+          logger.info("Exception in opening key_file.");
+          logger.info(ex.getMessage());
         }
 
-        // logger.warn("getGuacamoleConfiguration method returned configs");
+        data = new byte[(int) key_file.length()];
+
+        try {
+          fis = new FileInputStream(key_file);
+        } catch (Exception ex) {
+          logger.info("Exception in FileInputStream key_file.");
+          logger.info(ex.getMessage());
+        }
+
+        try {
+          fis.read(data);
+          fis.close();
+        } catch (Exception ex) {
+          logger.info("Exception in reading or closing data.");
+          logger.info(ex.getMessage());
+        }
+
+        try {
+          key = new String(data, "UTF-8");
+        } catch (Exception ex) {
+          logger.info("Exception in creating key string.");
+          logger.info(ex.getMessage());
+        }
+
+        // Remove trailing newline
+        key = key.substring(0, key.length() - 1);
+
+        config.setParameter("private-key", key);
+        config.setParameter("sftp-private-key", key);
+
         return config;
     }
 
