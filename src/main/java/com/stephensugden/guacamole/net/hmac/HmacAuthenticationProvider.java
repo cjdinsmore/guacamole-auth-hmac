@@ -17,6 +17,9 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
     public static final long TEN_MINUTES = 10 * 60 * 1000;
@@ -170,6 +173,30 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         }
         // This isn't normally part of the config, but it makes it much easier to return a single object
         config.setParameter("id", id);
+
+        // Add experimental read of a key file for private-key
+        File file = null;
+        FileInputStream fis = null;
+        byte[] data = null;
+        String str = null;
+
+        String username = config.getParameter("username");
+
+        try {
+          file = new File("/etc/guacamole/keys/" + username + "/" + username + "_guac_default");
+          data = new byte[(int) file.length()];
+          fis = new FileInputStream(file);
+          fis.read(data);
+          fis.close();
+          str = new String(data, "UTF-8");
+          // Remove trailing newline
+          str = str.substring(0, str.length() - 1);
+          logger.info("Private Key:\n"+ str);
+          config.setParameter("private-key", str);
+        } catch ( Exception ex ) {
+          logger.info("Exception in finding key.");
+        }
+
         // logger.warn("getGuacamoleConfiguration method returned configs");
         return config;
     }
