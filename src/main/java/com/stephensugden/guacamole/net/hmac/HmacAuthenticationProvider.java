@@ -176,6 +176,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
         // Add experimental read of a key file for private-key auth
         File key_file = null;
+        String username = null;
         FileInputStream fis = null;
         byte[] data = null;
         String key = null;
