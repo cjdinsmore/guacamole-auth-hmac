@@ -1,53 +1,52 @@
-#!/user/bin/python
-#-*- coding:utf-8 -*-
-
-import hashlib
-import hmac
-import random
+import json
 import time
-import urllib
+import uuid
+import hmac
+import hashlib
+import base64
+import requests
 import sys
 
-# Usage: python gen_guac_url.py [HOSTNAME] [VNCPASS] [PROTOCOL]
+guac_server = sys.argv[1]
+secret = sys.argv[2]
+protocol = sys.argv[3]
+ip_address = sys.argv[4]
+username = sys.argv[5]
+port = sys.argv[6]
 
-SECRET_KEY = "secret_key"
-def gen_guac_conn(server, host, protocol):
-    conn_id = random.randint(1, 20000)
-    signedParams = ['guac.username', 'guac.password', 'guac.hostname', 'guac.port']
-    qs = dict()
-    qs["id"] = "c/" + str(conn_id)
-    qs["guac.hostname"] = host
-    qs['timestamp'] = int(round(time.time() * 1000))
-    if protocol == 'ssh':
-        qs["guac.protocol"] = "ssh"
-        qs["guac.port"] = 22
-        message = str(qs["timestamp"]) + qs["guac.protocol"]
-        for key in signedParams:
-            if key in qs.keys():
-                message += str(key[5:])
-                message += str(qs[key])
-        hashed = hmac.new(SECRET_KEY, message, hashlib.sha256)
-        qs['signature'] = hashed.digest().encode("base64").rstrip('\n')
-        uri = urllib.urlencode(qs)
-    else:
-        qs['guac.password'] = sys.argv[2]
-        qs["guac.protocol"] = "vnc"
-        qs["guac.port"] = 5901
-        message = str(qs["timestamp"]) + qs["guac.protocol"]
-        for key in signedParams:
-            if key in qs.keys():
-                message += str(key[5:])
-                message += str(qs[key])
-        hashed = hmac.new(SECRET_KEY, message, hashlib.sha256)
-        qs['signature'] = hashed.digest().encode("base64").rstrip('\n')
-        uri = urllib.urlencode(qs)
+# passwd not required for SSH
+if len(sys.argv) == 8:
+    passwd = sys.argv[7]
 
-    guac_conn = 'http://' + str(server).strip() + '/#/c/client/' + str(conn_id) + '?' + uri
-    return guac_conn
+# Create UUID for connection ID
+conn_id = str(uuid.uuid4())
+base64_conn_id = base64.b64encode(conn_id[2:] + "\0" + 'c' + "\0" + 'hmac')
 
-if __name__ == "__main__":
-    server = 'localhost'
-    protocol = sys.argv[3]
-    host = sys.argv[1]
-    print gen_guac_conn(server, host, protocol)
-    print "\n"
+# Create timestamp that looks like: 1489181545018
+timestamp = str(int(round(time.time()*1000)))
+
+# Concatenate info for a message
+message = timestamp + protocol + ip_address + port + username + passwd
+
+# Hash the message into a signature
+signature = hmac.new(secret, message, hashlib.sha256).digest().encode("base64").rstrip('\n')
+
+# Build the POST request
+# Additional parameters from Guacamole docs can be added with "guac." prefix
+request_string = ('timestamp=' + timestamp
+                  + '&guac.port=' + port
+                  + '&guac.username=' + username
+                  + '&guac.password=' + passwd
+                  + '&guac.protocol=' + protocol
+                  + '&signature=' + signature
+                  + '&guac.hostname=' + ip_address
+                  + '&id=' + conn_id)
+
+# Send request to Guacamole backend and record the result
+response = requests.post(guac_server + '/api/tokens', data=request_string)
+
+if response.status_code == 403:
+    print "Guacamole server did not accept authentication."
+
+token = json.loads(response.content)['authToken']
+print guac_server + '/#/client/' + base64_conn_id + '?token=' + token
