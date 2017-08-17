@@ -183,7 +183,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
         try {
           username = config.getParameter("username");
-          key_file = new File("/etc/guacamole/keys/" + username + "/" + username + "_guac_default");
+          key_file = new File("/etc/guacamole/keys/" + username + "/id_rsa_guac");
         } catch (Exception ex) {
           logger.info("Exception in opening key_file.");
           logger.info(ex.getMessage());
