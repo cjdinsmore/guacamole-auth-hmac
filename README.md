@@ -33,7 +33,7 @@ Copy `guacamole-auth-hmac.jar` to the location specified by
     Whatever is generating the signed URLs will need to share this value.
  * `timestamp-age-limit` - A numeric value (in milliseconds) that determines how long
     a signed request should be valid for.
-
+ * `use-local-privkey` - A boolean value to specify whether or not Guacamole should check on the local filesystem for private keys.
 
 [config-classpath]: http://guac-dev.org/doc/gug/configuring-guacamole.html#idp380240
 
@@ -50,6 +50,9 @@ Copy `guacamole-auth-hmac.jar` to the location specified by
  * `guac.*` - (_optional_) Any other configuration parameters recognized by
     Guacamole can be by prefixing them with `guac.`.
 
+#### Private keys
+Since users are authenticated using a web request to the Guacamole server, it is insecure to use pubkey auth by sending the private keys over the web. This feature is enabled by the config parameter `use-local-privkey`. If true, Guacamole will look for the private key `$GUACAMOLE_HOME/keys/<username>/id_rsa_guac` and enable SFTP and use the key for SSH auth. The key and directory must be owned by the user running Guacamole (`tomcat7` in my case).
+
 ## Request Signing
 
 Requests must be signed with an HMAC, where the message content is generated from the request parameters as follows:
@@ -58,7 +61,7 @@ Requests must be signed with an HMAC, where the message content is generated fro
  2. Encrypt using SHA256.
 
 ## POST
-Using the php form example, parameters can be POSTed to `/guacamole/api/tokens` to authenticate. The response is then sent as JSON and contains `authToken` which is then used to login: `guacamole/#/client/(connection)?token=(authToken)`
+Using the python example, parameters can be POSTed to `/guacamole/api/tokens` to authenticate. The response is then sent as JSON and contains `authToken` which is then used to login: `guacamole/#/client/(connection)?token=(authToken)`
 
 `(connection)` is an encoded string that tells Guacamole to connect the user to a server. It is generated as follows:
 
