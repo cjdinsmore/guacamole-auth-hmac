@@ -95,10 +95,18 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         String id = config.getParameter("id");
         SimpleConnectionDirectory connections = (SimpleConnectionDirectory) context.getConnectionDirectory();
         SimpleConnection connection = new SimpleConnection(id, id, config);
+        connection.setParentIdentifier("ROOT");
         connections.putConnection(connection);
+
         return context;
     }
 
+    @Override
+    public AuthenticatedUser updateAuthenticatedUser(AuthenticatedUser authenticatedUser,
+      Credentials credentials) throws GuacamoleException {
+
+      return authenticateUser(credentials);
+    }
     private GuacamoleConfiguration getGuacamoleConfiguration(HttpServletRequest request) throws GuacamoleException {
         if (signatureVerifier == null) {
             initFromProperties();

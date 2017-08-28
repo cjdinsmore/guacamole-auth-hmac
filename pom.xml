@@ -5,6 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.stephensugden.guacamole</groupId>
     <artifactId>guacamole-auth-hmac</artifactId>
+    <version>1.0.3</version>
+
+    <name>guacamole-auth-hmac</name>
+    <url>https://github.com/grncdr/guacamole-auth-hmac</url>
+
     <packaging>jar</packaging>
     <version>0.9.12-incubating</version>
     <name>guacamole-auth-hmac</name>
