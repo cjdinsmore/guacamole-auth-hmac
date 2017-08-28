@@ -10,6 +10,7 @@ import org.apache.guacamole.net.auth.simple.SimpleConnectionDirectory;
 import org.apache.guacamole.properties.GuacamoleProperties;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +41,17 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         public String getName() { return "timestamp-age-limit"; }
     };
 
+    private static final BooleanGuacamoleProperty USE_LOCAL_PRIVKEY = new BooleanGuacamoleProperty() {
+        @Override
+        public String getName() { return "use-local-privkey"; }
+    };
+
     private static final Logger logger = LoggerFactory.getLogger(HmacAuthenticationProvider.class);
 
     // these will be overridden by properties file if present
     private String defaultProtocol = "rdp";
     private long timestampAgeLimit = TEN_MINUTES; // 10 minutes
+    private boolean useLocalPrivKey = false;
 
     // Per-request params
     public static final String SIGNATURE_PARAM = "signature";
@@ -182,50 +189,57 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         // This isn't normally part of the config, but it makes it much easier to return a single object
         config.setParameter("id", id);
 
-        // Add experimental read of a key file for private-key auth
-        File key_file = null;
-        String username = null;
-        FileInputStream fis = null;
-        byte[] data = null;
-        String key = null;
+        if ( useLocalPrivKey ) {
+            // Look for a private key locally
+            File key_file = null;
+            String username = null;
+            FileInputStream fis = null;
+            byte[] data = null;
+            String key = null;
 
-        try {
-          username = config.getParameter("username");
-          key_file = new File("/etc/guacamole/keys/" + username + "/id_rsa_guac");
-        } catch (Exception ex) {
-          logger.info("Exception in opening key_file.");
-          logger.info(ex.getMessage());
+            // Open the key_file
+            try {
+              username = config.getParameter("username");
+              key_file = new File("/etc/guacamole/keys/" + username + "/id_rsa_guac");
+            } catch (Exception ex) {
+              logger.info("Exception in opening key_file.");
+              logger.info(ex.getMessage());
+            }
+
+            // Create array of same length as key
+            data = new byte[(int) key_file.length()];
+
+            // Open FileInputStream
+            try {
+              fis = new FileInputStream(key_file);
+            } catch (Exception ex) {
+              logger.info("Exception in FileInputStream key_file.");
+              logger.info(ex.getMessage());
+            }
+
+            // Input data from key_file to data using FileInputStream
+            try {
+              fis.read(data);
+              fis.close();
+            } catch (Exception ex) {
+              logger.info("Exception in reading or closing data.");
+              logger.info(ex.getMessage());
+            }
+
+            // Convert data array to UTF-8 String
+            try {
+              key = new String(data, "UTF-8");
+            } catch (Exception ex) {
+              logger.info("Exception in creating key string.");
+              logger.info(ex.getMessage());
+            }
+
+            // Remove trailing newline
+            key = key.substring(0, key.length() - 1);
+
+            config.setParameter("private-key", key);
+            config.setParameter("sftp-private-key", key);
         }
-
-        data = new byte[(int) key_file.length()];
-
-        try {
-          fis = new FileInputStream(key_file);
-        } catch (Exception ex) {
-          logger.info("Exception in FileInputStream key_file.");
-          logger.info(ex.getMessage());
-        }
-
-        try {
-          fis.read(data);
-          fis.close();
-        } catch (Exception ex) {
-          logger.info("Exception in reading or closing data.");
-          logger.info(ex.getMessage());
-        }
-
-        try {
-          key = new String(data, "UTF-8");
-        } catch (Exception ex) {
-          logger.info("Exception in creating key string.");
-          logger.info(ex.getMessage());
-        }
-
-        // Remove trailing newline
-        key = key.substring(0, key.length() - 1);
-
-        config.setParameter("private-key", key);
-        config.setParameter("sftp-private-key", key);
 
         return config;
     }
@@ -271,6 +285,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         String secretKey = GuacamoleProperties.getRequiredProperty(SECRET_KEY);
         signatureVerifier = new SignatureVerifier(secretKey);
         defaultProtocol = GuacamoleProperties.getProperty(DEFAULT_PROTOCOL);
+        useLocalPrivKey = GuacamoleProperties.getProperty(USE_LOCAL_PRIVKEY);
         if (defaultProtocol == null) defaultProtocol = "rdp";
         if (GuacamoleProperties.getProperty(TIMESTAMP_AGE_LIMIT) == null){
            timestampAgeLimit = TEN_MINUTES;
