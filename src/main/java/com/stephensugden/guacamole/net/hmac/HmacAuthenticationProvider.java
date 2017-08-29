@@ -166,7 +166,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         logger.info("Recieved message: {}\nRecieved signature: {}", message.toString(), signature);
 
         if (!signatureVerifier.verifySignature(signature, message.toString())) {
-            logger.severe("Signatures do not match.");
+            logger.error("Signatures do not match.");
             return null;
         }
         String id = request.getParameter(ID_PARAM);
