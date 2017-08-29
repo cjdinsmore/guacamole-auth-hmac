@@ -116,7 +116,6 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         logger.info("Get hmac signature: {}", signature);
 
         if (signature == null) {
-            logger.warn("signature is null");
             return null;
         }
         signature = signature.replace(' ', '+');
@@ -130,19 +129,19 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
         // Hostname is required!
         if (config.getParameter("hostname") == null) {
-            logger.warn("hostname is null");
+            logger.warn("hostname parameter is missing");
             return null;
         }
 
         // Protocol is required!
         if (config.getProtocol() == null) {
-            logger.warn("protocol is null");
+            logger.warn("protocol parameter is missing");
             return null;
         }
 
         // Port is required!
         if (config.getParameter("port") == null) {
-            logger.warn("port is null");
+            logger.warn("port parameter is missing");
             return null;
         }
 
@@ -161,13 +160,13 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
         // Password is not required! Append if it does exist
         if (config.getParameter("password") == null) {
-            logger.warn("password is null");
+            logger.warn("password parameter is missing");
         } else { message.append(config.getParameter("password")); }
 
         logger.info("Recieved message: {}\nRecieved signature: {}", message.toString(), signature);
 
         if (!signatureVerifier.verifySignature(signature, message.toString())) {
-            logger.warn("Signatures do not match.");
+            logger.severe("Signatures do not match.");
             return null;
         }
         String id = request.getParameter(ID_PARAM);
@@ -195,40 +194,38 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
               username = config.getParameter("username");
               key_file = new File("/etc/guacamole/keys/" + username + "/id_rsa_guac");
             } catch (Exception ex) {
-              logger.info("Exception in opening key_file.");
-              logger.info(ex.getMessage());
+              logger.info("Exception in opening key_file:\n{}", ex.getMessage());
             }
 
             // Create array of same length as key
             data = new byte[(int) key_file.length()];
 
-            // Open FileInputStream
+            // Open FileInputStream to read from and write to byte array
             try {
               fis = new FileInputStream(key_file);
             } catch (Exception ex) {
-              logger.info("Exception in FileInputStream key_file.");
-              logger.info(ex.getMessage());
+              logger.info("Exception in creating FileInputStream key_file:\n{}", ex.getMessage());
             }
 
-            // Input data from key_file to data using FileInputStream
+            // Input data from key_file to data (byte array) using FileInputStream
             try {
               fis.read(data);
               fis.close();
             } catch (Exception ex) {
-              logger.info("Exception in reading or closing data.");
-              logger.info(ex.getMessage());
+              logger.info("Exception in reading or closing data:\n{}", ex.getMessage());
             }
 
             // Convert data array to UTF-8 String
             try {
               key = new String(data, "UTF-8");
             } catch (Exception ex) {
-              logger.info("Exception in creating key string.");
-              logger.info(ex.getMessage());
+              logger.info("Exception in creating key string:\n{}", ex.getMessage());
             }
 
             // Remove trailing newline
             key = key.substring(0, key.length() - 1);
+
+            logger.info("Successfully gathered local private key.");
 
             config.setParameter("private-key", key);
             config.setParameter("sftp-private-key", key);
