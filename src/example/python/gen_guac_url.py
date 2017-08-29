@@ -7,6 +7,10 @@ import base64
 import requests
 import sys
 
+if len(sys.argv) < 7:
+    print "Usage: python %s <server_url> <secret> <protocol> <target_ip> <username> <port> [<passwd>]" % sys.argv[0]
+    print "passwd is optional for SSH, required for VNC."
+
 guac_server = sys.argv[1]
 secret = sys.argv[2]
 protocol = sys.argv[3]
