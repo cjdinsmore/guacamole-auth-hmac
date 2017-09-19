@@ -49,7 +49,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
     private static final Logger logger = LoggerFactory.getLogger(HmacAuthenticationProvider.class);
 
     // these will be overridden by properties file if present
-    private String defaultProtocol = "rdp";
+    private String defaultProtocol = "ssh";
     private long timestampAgeLimit = TEN_MINUTES; // 10 minutes
     private boolean useLocalPrivKey = false;
 
