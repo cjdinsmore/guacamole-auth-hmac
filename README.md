@@ -72,7 +72,7 @@ With this configuration for Docker, a database is not required (requires 0.9.13)
 
 **NOTE** Be sure to `chmod 755` the extension jar or it will not be loaded! Also, the very first request for authentication fails with a 500 error, but all subsequent requests succeed.
 
-
+### guacamole.properties
 This extension adds extra config keys to `guacamole.properties`:
 
 | Variable                | Required | Default | Comments                                                                                                                 |
