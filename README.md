@@ -52,6 +52,7 @@ services:
         environment:
             GUACD_HOSTNAME: guacd
             GUACD_PORT: 4822
+            GUACAMOLE_HOME: /config
 ```
 The structure of guacamole-data looks like:
 ```
