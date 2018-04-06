@@ -28,11 +28,12 @@ Copy `guacamole-auth-hmac.jar` to the location specified by [`lib-directory`][co
 
 This extension adds extra config keys to `guacamole.properties`:
 
-| Variable                | Required | Default | Comments                                                                                                                 |
-|-------------------------|----------|---------|--------------------------------------------------------------------------------------------------------------------------|
-| `secret-key`            | yes      | None    | The key that will be used to verify URL signatures. Whatever is generating the signed URLs will need to share this value.|
-| `timestamp-age-limit`   | no       | 600000  | A numeric value (in milliseconds) that determines how long a signed request should be valid for. 600000 ms = 10 min      |
-| `use-local-privkey`     | no       | False   | A boolean value to specify whether or not Guacamole should check on the local filesystem for private keys.               |
+| Variable                | Required | Default               | Comments                                                                                                                 |
+|-------------------------|----------|-----------------------|--------------------------------------------------------------------------------------------------------------------------|
+| `secret-key`            | yes      | None                  | The key that will be used to verify URL signatures. Whatever is generating the signed URLs will need to share this value.|
+| `timestamp-age-limit`   | no       | 600000                | A numeric value (in milliseconds) that determines how long a signed request should be valid for. 600000 ms = 10 min      |
+| `use-local-privkey`     | no       | False                 | A boolean value to specify whether or not Guacamole should check on the local filesystem for private keys.               |
+| `key-directory`         | no       | /etc/guacamole/keys   | A String specifying the location of local private keys. **No trailing '/'.**                                             |
 
 
 [config-classpath]: http://guac-dev.org/doc/gug/configuring-guacamole.html#idp380240

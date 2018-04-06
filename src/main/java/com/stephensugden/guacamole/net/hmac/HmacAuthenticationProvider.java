@@ -192,7 +192,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
             // Open the key_file
             try {
               username = config.getParameter("username");
-              key_file = new File(keyDir + username + "/id_rsa_guac");
+              key_file = new File(keyDir + "/" + username + "/id_rsa_guac");
             } catch (Exception ex) {
               logger.info("Exception in opening key_file:\n{}", ex.getMessage());
             }
