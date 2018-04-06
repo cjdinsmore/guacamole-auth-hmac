@@ -46,12 +46,18 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         public String getName() { return "use-local-privkey"; }
     };
 
+    private static final StringGuacamoleProperty KEY_DIR = new StringGuacamoleProperty() {
+        @Override
+        public String getName() { return "key-directory"; }
+    };
+
     private static final Logger logger = LoggerFactory.getLogger(HmacAuthenticationProvider.class);
 
     // these will be overridden by properties file if present
     private String defaultProtocol = "ssh";
     private long timestampAgeLimit = TEN_MINUTES; // 10 minutes
     private boolean useLocalPrivKey = false;
+    private String keyDir = "/etc/guacamole/keys";
 
     // Per-request params
     public static final String SIGNATURE_PARAM = "signature";
@@ -186,7 +192,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
             // Open the key_file
             try {
               username = config.getParameter("username");
-              key_file = new File("/etc/guacamole/keys/" + username + "/id_rsa_guac");
+              key_file = new File(keyDir + username + "/id_rsa_guac");
             } catch (Exception ex) {
               logger.info("Exception in opening key_file:\n{}", ex.getMessage());
             }
@@ -270,6 +276,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         signatureVerifier = new SignatureVerifier(secretKey);
         defaultProtocol = GuacamoleProperties.getProperty(DEFAULT_PROTOCOL);
         useLocalPrivKey = GuacamoleProperties.getProperty(USE_LOCAL_PRIVKEY);
+        keyDir = GuacamoleProperties.getProperty(KEY_DIR);
         if (defaultProtocol == null) defaultProtocol = "rdp";
         if (GuacamoleProperties.getProperty(TIMESTAMP_AGE_LIMIT) == null){
            timestampAgeLimit = TEN_MINUTES;
