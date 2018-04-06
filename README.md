@@ -1,6 +1,6 @@
 # guacamole-auth-hmac
 
-Built for **Guacamole 0.9.12-incubating**.
+Built for **Guacamole 0.9.13-incubating**.
 
 ## Description
 
@@ -26,6 +26,54 @@ at least that version before using this plugin.
 
 Copy `guacamole-auth-hmac.jar` to the location specified by [`lib-directory`][config-classpath] in `guacamole.properties`.
 
+### Docker Configuration
+Mount a directory containing `guacamole-auth-hmac-0.9.13-incubating.jar` to the extensions directory one directory under the directory that is defined as GUACAMOLE_HOME. An example docker-compose.yml is provided below:
+
+```
+version: '3'
+services:
+  guacd:
+        image: guacamole/guacd:0.9.13-incubating
+        hostname: guacd
+        restart: always
+
+    guacamole:
+        image: guacamole/guacamole:0.9.13-incubating
+        hostname: guacamole
+        restart: always
+        links:
+            - guacd
+        ports:
+            - "8080:8080"
+        volumes:
+            - ./guacamole-data/config:/config
+        depends_on:
+            - guacd            
+        environment:
+            GUACD_HOSTNAME: guacd
+            GUACD_PORT: 4822
+            GUACAMOLE_HOME: /config
+```
+The structure of guacamole-data looks like:
+```
+guacamole-data
+└── config
+    ├── extensions
+    │   └── guacamole-auth-hmac-0.9.13-incubating.jar
+    ├── guacamole.properties
+    └── lib
+```
+And guacamole.properties contains:
+```
+secret-key: <some-secret-key>
+timestamp-age-limit: 100000
+auth-provider: com.stephensugden.guacamole.net.hmac.HmacAuthenticationProvider
+```
+With this configuration for Docker, a database is not required (requires 0.9.13).
+
+**NOTE** Be sure to `chmod 755` the extension jar or it will not be loaded! Also, the very first request for authentication fails with a 500 error, but all subsequent requests succeed.
+
+### guacamole.properties
 This extension adds extra config keys to `guacamole.properties`:
 
 | Variable                | Required | Default | Comments                                                                                                                 |
