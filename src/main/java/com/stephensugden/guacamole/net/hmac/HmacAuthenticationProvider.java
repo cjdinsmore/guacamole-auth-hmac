@@ -101,8 +101,10 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         GuacamoleConfiguration config = getGuacamoleConfiguration(credentials.getRequest());
 
         if (config == null) {
+            logger.info("Config is null");
             return null;
         }
+        logger.info("Config is not null");
 
         Map<String, GuacamoleConfiguration> configs = new HashMap<String, GuacamoleConfiguration>();
         configs.put(config.getParameter("id"), config);
