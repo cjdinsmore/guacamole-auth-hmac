@@ -64,7 +64,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
     private static final Logger logger = LoggerFactory.getLogger(HmacAuthenticationProvider.class);
 
     // these will be overridden by properties file if present
-    private String defaultProtocol = "ssh";
+    private String defaultProtocol = "rdp";
     private long timestampAgeLimit = TEN_MINUTES; // 10 minutes
     private boolean useLocalPrivKey = false;
     private String keyDir = "/etc/guacamole/keys";
@@ -91,7 +91,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         return "hmac";
     }
 
-    // @Override
+    @Override
     public Map<String, GuacamoleConfiguration> getAuthorizedConfigurations(Credentials credentials)
             throws GuacamoleException {
         if (signatureVerifier == null) {
@@ -192,17 +192,14 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
             logger.error("Signatures do not match.");
             return null;
         }
-        logger.info("After signature verify");
+
         String id = request.getParameter(ID_PARAM);
         if (id == null) {
             id = "DEFAULT";
         }
-        logger.info("after ID_PARAM");
         config.setParameter("id", id);
-        logger.info("After id set");
 
         if (useLocalPrivKey) {
-            logger.info("Inside priv key block");
             // Look for a private key locally
             File key_file = null;
             String username = null;
@@ -251,8 +248,6 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
             config.setParameter("private-key", key);
             config.setParameter("sftp-private-key", key);
         }
-        logger.info("before last return");
-        logger.info("Conn ID: {}, To string: {}", config.getConnectionID(), config.toString());
         return config;
     }
 
