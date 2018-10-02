@@ -192,13 +192,17 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
             logger.error("Signatures do not match.");
             return null;
         }
+        logger.info("After signature verify");
         String id = request.getParameter(ID_PARAM);
         if (id == null) {
             id = "DEFAULT";
         }
+        logger.info("after ID_PARAM");
         config.setParameter("id", id);
+        logger.info("After id set");
 
         if (useLocalPrivKey) {
+            logger.info("Inside priv key block");
             // Look for a private key locally
             File key_file = null;
             String username = null;
@@ -247,7 +251,8 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
             config.setParameter("private-key", key);
             config.setParameter("sftp-private-key", key);
         }
-
+        logger.info("before last return");
+        logger.info("Conn ID: {}, To string: {}", config.getConnectionID(), config.toString());
         return config;
     }
 
