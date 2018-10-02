@@ -28,27 +28,37 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
     // Properties file params
     private static final StringGuacamoleProperty SECRET_KEY = new StringGuacamoleProperty() {
         @Override
-        public String getName() { return "secret-key"; }
+        public String getName() {
+            return "secret-key";
+        }
     };
 
     private static final StringGuacamoleProperty DEFAULT_PROTOCOL = new StringGuacamoleProperty() {
         @Override
-        public String getName() { return "default-protocol"; }
+        public String getName() {
+            return "default-protocol";
+        }
     };
 
     private static final IntegerGuacamoleProperty TIMESTAMP_AGE_LIMIT = new IntegerGuacamoleProperty() {
         @Override
-        public String getName() { return "timestamp-age-limit"; }
+        public String getName() {
+            return "timestamp-age-limit";
+        }
     };
 
     private static final BooleanGuacamoleProperty USE_LOCAL_PRIVKEY = new BooleanGuacamoleProperty() {
         @Override
-        public String getName() { return "use-local-privkey"; }
+        public String getName() {
+            return "use-local-privkey";
+        }
     };
 
     private static final StringGuacamoleProperty KEY_DIR = new StringGuacamoleProperty() {
         @Override
-        public String getName() { return "key-directory"; }
+        public String getName() {
+            return "key-directory";
+        }
     };
 
     private static final Logger logger = LoggerFactory.getLogger(HmacAuthenticationProvider.class);
@@ -82,7 +92,8 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
     }
 
     // @Override
-    public Map<String, GuacamoleConfiguration> getAuthorizedConfigurations(Credentials credentials) throws GuacamoleException {
+    public Map<String, GuacamoleConfiguration> getAuthorizedConfigurations(Credentials credentials)
+            throws GuacamoleException {
         if (signatureVerifier == null) {
             initFromProperties();
         }
@@ -98,13 +109,14 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         return configs;
     }
 
-    public UserContext updateUserContext(UserContext context, AuthenticatedUser user ) throws GuacamoleException {
+    public UserContext updateUserContext(UserContext context, AuthenticatedUser user) throws GuacamoleException {
         Credentials credentials = user.getCredentials();
         HttpServletRequest request = credentials.getRequest();
         GuacamoleConfiguration config = getGuacamoleConfiguration(request);
         if (config == null) {
             return null;
         }
+        logger.info("Config is not null");
         String id = config.getParameter("id");
         SimpleConnectionDirectory connections = (SimpleConnectionDirectory) context.getConnectionDirectory();
         SimpleConnection connection = new SimpleConnection(id, id, config);
@@ -162,12 +174,16 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         // Username is not required! Append if it does exist
         if (config.getParameter("username") == null) {
             logger.warn("username is null");
-        } else { message.append(config.getParameter("username")); }
+        } else {
+            message.append(config.getParameter("username"));
+        }
 
         // Password is not required! Append if it does exist
         if (config.getParameter("password") == null) {
             logger.warn("password parameter is missing");
-        } else { message.append(config.getParameter("password")); }
+        } else {
+            message.append(config.getParameter("password"));
+        }
 
         logger.info("Recieved message: {}\nRecieved signature: {}", message.toString(), signature);
 
@@ -181,7 +197,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         }
         config.setParameter("id", id);
 
-        if ( useLocalPrivKey ) {
+        if (useLocalPrivKey) {
             // Look for a private key locally
             File key_file = null;
             String username = null;
@@ -191,10 +207,10 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
             // Open the key_file
             try {
-              username = config.getParameter("username");
-              key_file = new File(keyDir + username + "/id_rsa_guac");
+                username = config.getParameter("username");
+                key_file = new File(keyDir + username + "/id_rsa_guac");
             } catch (Exception ex) {
-              logger.info("Exception in opening key_file:\n{}", ex.getMessage());
+                logger.info("Exception in opening key_file:\n{}", ex.getMessage());
             }
 
             // Create array of same length as key
@@ -202,24 +218,24 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
 
             // Open FileInputStream to read from and write to byte array
             try {
-              fis = new FileInputStream(key_file);
+                fis = new FileInputStream(key_file);
             } catch (Exception ex) {
-              logger.info("Exception in creating FileInputStream key_file:\n{}", ex.getMessage());
+                logger.info("Exception in creating FileInputStream key_file:\n{}", ex.getMessage());
             }
 
             // Input data from key_file to data (byte array) using FileInputStream
             try {
-              fis.read(data);
-              fis.close();
+                fis.read(data);
+                fis.close();
             } catch (Exception ex) {
-              logger.info("Exception in reading or closing data:\n{}", ex.getMessage());
+                logger.info("Exception in reading or closing data:\n{}", ex.getMessage());
             }
 
             // Convert data array to UTF-8 String
             try {
-              key = new String(data, "UTF-8");
+                key = new String(data, "UTF-8");
             } catch (Exception ex) {
-              logger.info("Exception in creating key string:\n{}", ex.getMessage());
+                logger.info("Exception in creating key string:\n{}", ex.getMessage());
             }
 
             // Remove trailing newline
@@ -257,16 +273,15 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
             String value = request.getParameter(name);
             if (!name.startsWith(PARAM_PREFIX) || value == null || value.length() == 0) {
                 continue;
-            }
-            else if (name.equals(PARAM_PREFIX + "protocol")) {
+            } else if (name.equals(PARAM_PREFIX + "protocol")) {
                 config.setProtocol(request.getParameter(name));
-            }
-            else {
+            } else {
                 config.setParameter(name.substring(PARAM_PREFIX.length()), request.getParameter(name));
             }
         }
 
-        if (config.getProtocol() == null) config.setProtocol(defaultProtocol);
+        if (config.getProtocol() == null)
+            config.setProtocol(defaultProtocol);
 
         return config;
     }
@@ -277,11 +292,12 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         defaultProtocol = GuacamoleProperties.getProperty(DEFAULT_PROTOCOL);
         useLocalPrivKey = GuacamoleProperties.getProperty(USE_LOCAL_PRIVKEY);
         keyDir = GuacamoleProperties.getProperty(KEY_DIR);
-        if (defaultProtocol == null) defaultProtocol = "rdp";
-        if (GuacamoleProperties.getProperty(TIMESTAMP_AGE_LIMIT) == null){
-           timestampAgeLimit = TEN_MINUTES;
-        }  else {
-           timestampAgeLimit = GuacamoleProperties.getProperty(TIMESTAMP_AGE_LIMIT);
+        if (defaultProtocol == null)
+            defaultProtocol = "rdp";
+        if (GuacamoleProperties.getProperty(TIMESTAMP_AGE_LIMIT) == null) {
+            timestampAgeLimit = TEN_MINUTES;
+        } else {
+            timestampAgeLimit = GuacamoleProperties.getProperty(TIMESTAMP_AGE_LIMIT);
         }
     }
 }
