@@ -114,6 +114,7 @@ public class HmacAuthenticationProvider extends SimpleAuthenticationProvider {
         HttpServletRequest request = credentials.getRequest();
         GuacamoleConfiguration config = getGuacamoleConfiguration(request);
         if (config == null) {
+            logger.info("Config is null");
             return null;
         }
         logger.info("Config is not null");
